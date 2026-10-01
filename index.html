@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Compras Colectivas - La Bahía</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'cayeye-cream': '#F9F8F3',
+            'cayeye-card': '#FFFFFF',
+            'cayeye-olive': '#3A4F29',
+            'cayeye-olive-dark': '#2A3A1D',
+            'cayeye-olive-light': '#4E6838',
+            'cayeye-mustard': '#D99D26',
+            'cayeye-mustard-dark': '#B88219',
+            'cayeye-mustard-light': '#FCEECF',
+            'cayeye-border': '#E4DFC9',
+            'cayeye-text': '#232D1C'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          boxShadow: {
+            'fat-button': '0 4px 0 0 rgba(0,0,0,0.18)',
+            'sticky-bar': '0 -6px 20px rgba(0, 0, 0, 0.08)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Fat-finger friendly touch behaviors */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    input, button {
+      user-select: auto;
+    }
+    /* Smooth button press feedback */
+    .btn-press:active {
+      transform: translateY(2px);
+      box-shadow: 0 1px 0 0 rgba(0,0,0,0.18);
+    }
+    /* Pulse badge for urgency */
+    @keyframes subtlePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.03); }
+    }
+    .animate-badge {
+      animation: subtlePulse 2.5s infinite ease-in-out;
+    }
+  </style>
+</head>
+
+<body class="bg-cayeye-cream text-cayeye-text font-sans antialiased min-h-screen flex flex-col pb-36">
+
+  <!-- Top Micro-announcement Bar -->
+  <div class="bg-cayeye-olive-dark text-white text-xs font-semibold py-1.5 px-4 text-center flex items-center justify-center gap-2">
+    <span class="inline-block w-2 h-2 rounded-full bg-cayeye-mustard animate-ping"></span>
+    <span>Paga contra entrega en tu puesto de comida • La Bahía</span>
+  </div>
+
+  <!-- Header Section -->
+  <header class="bg-cayeye-olive text-white px-5 pt-6 pb-7 shadow-md rounded-b-3xl relative overflow-hidden">
+    <!-- Decorative background elements -->
+    <div class="absolute -right-6 -bottom-8 w-28 h-28 bg-white/5 rounded-full pointer-events-none"></div>
+    <div class="absolute left-1/2 -top-10 w-40 h-40 bg-cayeye-mustard/10 rounded-full blur-xl pointer-events-none"></div>
+
+    <div class="max-w-md mx-auto relative z-10">
+      <div class="flex items-center justify-between mb-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-cayeye-mustard text-cayeye-olive-dark uppercase tracking-wider shadow-sm">
+          <i class="fa-solid fa-users text-[11px]"></i> Venta Comunitaria
+        </span>
+        <span class="text-xs text-white/80 font-medium flex items-center gap-1">
+          <i class="fa-solid fa-location-dot text-cayeye-mustard"></i> La Bahía
+        </span>
+      </div>
+
+      <h1 class="text-2xl font-black tracking-tight leading-tight mb-1 text-white">
+        Compras Colectivas - La Bahía
+      </h1>
+      <p class="text-white/90 text-sm leading-snug font-medium">
+        Precios de mayorista sin comprar la caja entera. Aparta desde 1 unidad.
+      </p>
+
+      <!-- Quick Benefit Bullets -->
+      <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/15 text-xs text-white/95">
+        <div class="flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-check text-cayeye-mustard"></i>
+          <span>Ahorro de hasta el 35%</span>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <i class="fa-solid fa-motorcycle text-cayeye-mustard"></i>
+          <span>Llega directo a tu puesto</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-md mx-auto w-full px-4 mt-4 space-y-4">
+    
+    <!-- Mini Helper Note -->
+    <div class="bg-cayeye-mustard-light/70 border border-cayeye-mustard/40 rounded-2xl p-3.5 flex items-start gap-3 shadow-sm">
+      <div class="w-8 h-8 rounded-full bg-cayeye-mustard/20 text-cayeye-mustard-dark flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-sm">
+        <i class="fa-solid fa-lightbulb"></i>
+      </div>
+      <div>
+        <p class="text-xs text-cayeye-text font-semibold leading-snug">
+          ¿Cómo funciona?
+        </p>
+        <p class="text-xs text-cayeye-text/80 leading-relaxed mt-0.5">
+          Tú apartas solo lo que necesitas. Cuando se completa la meta entre todos los puestos, el mayorista despacha a precio especial.
+        </p>
+      </div>
+    </div>
+
+    <!-- PRODUCT 1: CEBOLLA CRISPY -->
+    <article class="bg-cayeye-card rounded-2xl border-2 border-cayeye-border p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+      <!-- Collective badge -->
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <div>
+          <div class="flex items-center gap-1.5 mb-1">
+            <span class="bg-cayeye-olive/10 text-cayeye-olive font-bold text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-md">
+              Insumo Clave
+            </span>
+            <span class="bg-cayeye-mustard text-cayeye-olive-dark text-[11px] font-black px-2 py-0.5 rounded-md shadow-xs animate-badge">
+              Ahorras $5.000 / ud
+            </span>
+          </div>
+          <h2 class="text-lg font-black text-cayeye-olive-dark leading-tight">
+            Cebolla Crispy
+          </h2>
+          <p class="text-xs text-gray-500 font-medium">Bolsa 500g • Calidad Premium para hamburguesas y perros</p>
+        </div>
+        
+        <!-- Product Icon Visual Badge -->
+        <div class="w-12 h-12 rounded-xl bg-cayeye-cream border border-cayeye-border flex items-center justify-center text-cayeye-olive text-2xl flex-shrink-0 shadow-inner">
+          <i class="fa-solid fa-bowl-food"></i>
+        </div>
+      </div>
+
+      <!-- Pricing Block -->
+      <div class="bg-cayeye-cream/70 rounded-xl p-3 border border-cayeye-border/60 my-3">
+        <div class="flex items-baseline justify-between">
+          <div>
+            <span class="text-[11px] uppercase tracking-wider font-semibold text-gray-500 block">Precio Mayorista Colectivo</span>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-black text-cayeye-olive tracking-tight">$ 11.000</span>
+              <span class="text-xs text-rose-600 font-bold line-through">$ 16.000 detal</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-gray-500 font-medium block">Meta colectiva:</span>
+            <span class="text-xs font-bold text-cayeye-olive-dark bg-white px-2 py-0.5 rounded border border-cayeye-border inline-block">
+              Caja x 12 uds
+            </span>
+          </div>
+        </div>
+
+        <!-- Progress Bar (Simulated: 8 reserved base) -->
+        <div class="mt-3 pt-2 border-t border-cayeye-border/40">
+          <div class="flex justify-between items-center text-[11px] mb-1 font-semibold">
+            <span class="text-gray-600 flex items-center gap-1">
+              <i class="fa-solid fa-boxes-stacked text-cayeye-olive"></i>
+              <span>Avance de la caja:</span>
+            </span>
+            <span id="p1-progress-label" class="text-cayeye-olive font-extrabold">8 de 12 (66%)</span>
+          </div>
+          <!-- Bar Track -->
+          <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden p-0.5">
+            <div id="p1-progress-bar" class="bg-cayeye-olive h-full rounded-full transition-all duration-300" style="width: 66%;"></div>
+          </div>
+          <div class="flex justify-between items-center mt-1 text-[10px] text-gray-500 font-medium">
+            <span id="p1-slots-left" class="text-cayeye-mustard-dark font-bold"><i class="fa-solid fa-fire text-amber-500"></i> Faltan 4 para cerrar</span>
+            <span>Meta: 12 unidades</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Counter & Selection Action (Fat-Finger Friendly) -->
+      <div class="flex items-center justify-between pt-1">
+        <div class="text-xs font-semibold text-gray-600">
+          <span>¿Cuántas apartas tú?</span>
+          <div id="p1-subtotal" class="text-xs font-bold text-cayeye-olive">Subtotal: $0</div>
+        </div>
+
+        <!-- Touch Controls -->
+        <div class="flex items-center gap-2 bg-cayeye-cream p-1.5 rounded-2xl border-2 border-cayeye-border">
+          <button 
+            type="button" 
+            onclick="updateQty('p1', -1)" 
+            aria-label="Restar una Cebolla Crispy"
+            class="w-12 h-12 rounded-xl bg-white border border-cayeye-border text-cayeye-olive font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none transition-all"
+            id="p1-btn-minus"
+            disabled
+          >
+            <i class="fa-solid fa-minus text-base"></i>
+          </button>
+
+          <span 
+            id="p1-qty" 
+            class="w-10 text-center font-black text-2xl text-cayeye-olive-dark tracking-tight"
+          >
+            0
+          </span>
+
+          <button 
+            type="button" 
+            onclick="updateQty('p1', 1)" 
+            aria-label="Sumar una Cebolla Crispy"
+            class="w-12 h-12 rounded-xl bg-cayeye-olive text-white font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-cayeye-olive-dark disabled:opacity-40 disabled:pointer-events-none transition-all"
+            id="p1-btn-plus"
+          >
+            <i class="fa-solid fa-plus text-base"></i>
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- PRODUCT 2: BOLSAS HERMÉTICAS -->
+    <article class="bg-cayeye-card rounded-2xl border-2 border-cayeye-border p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+      <!-- Collective badge -->
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <div>
+          <div class="flex items-center gap-1.5 mb-1">
+            <span class="bg-cayeye-olive/10 text-cayeye-olive font-bold text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-md">
+              Empaque Clave
+            </span>
+            <span class="bg-cayeye-mustard text-cayeye-olive-dark text-[11px] font-black px-2 py-0.5 rounded-md shadow-xs animate-badge">
+              Ahorras $3.000 / paq
+            </span>
+          </div>
+          <h2 class="text-lg font-black text-cayeye-olive-dark leading-tight">
+            Bolsas Herméticas
+          </h2>
+          <p class="text-xs text-gray-500 font-medium">Paquete x 100 • Ziploc grueso para domicilios y salsas</p>
+        </div>
+        
+        <!-- Product Icon Visual Badge -->
+        <div class="w-12 h-12 rounded-xl bg-cayeye-cream border border-cayeye-border flex items-center justify-center text-cayeye-olive text-2xl flex-shrink-0 shadow-inner">
+          <i class="fa-solid fa-box-open"></i>
+        </div>
+      </div>
+
+      <!-- Pricing Block -->
+      <div class="bg-cayeye-cream/70 rounded-xl p-3 border border-cayeye-border/60 my-3">
+        <div class="flex items-baseline justify-between">
+          <div>
+            <span class="text-[11px] uppercase tracking-wider font-semibold text-gray-500 block">Precio Mayorista Colectivo</span>
+            <div class="flex items-baseline gap-2">
+              <span class="text-2xl font-black text-cayeye-olive tracking-tight">$ 5.500</span>
+              <span class="text-xs text-rose-600 font-bold line-through">$ 8.500 detal</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="text-[10px] text-gray-500 font-medium block">Meta colectiva:</span>
+            <span class="text-xs font-bold text-cayeye-olive-dark bg-white px-2 py-0.5 rounded border border-cayeye-border inline-block">
+              Paca x 20 paqs
+            </span>
+          </div>
+        </div>
+
+        <!-- Progress Bar (Simulated: 15 reserved base) -->
+        <div class="mt-3 pt-2 border-t border-cayeye-border/40">
+          <div class="flex justify-between items-center text-[11px] mb-1 font-semibold">
+            <span class="text-gray-600 flex items-center gap-1">
+              <i class="fa-solid fa-layer-group text-cayeye-olive"></i>
+              <span>Avance de la paca:</span>
+            </span>
+            <span id="p2-progress-label" class="text-cayeye-olive font-extrabold">15 de 20 (75%)</span>
+          </div>
+          <!-- Bar Track -->
+          <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden p-0.5">
+            <div id="p2-progress-bar" class="bg-cayeye-olive h-full rounded-full transition-all duration-300" style="width: 75%;"></div>
+          </div>
+          <div class="flex justify-between items-center mt-1 text-[10px] text-gray-500 font-medium">
+            <span id="p2-slots-left" class="text-cayeye-mustard-dark font-bold"><i class="fa-solid fa-fire text-amber-500"></i> Faltan 5 para cerrar</span>
+            <span>Meta: 20 paquetes</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Counter & Selection Action (Fat-Finger Friendly) -->
+      <div class="flex items-center justify-between pt-1">
+        <div class="text-xs font-semibold text-gray-600">
+          <span>¿Cuántas apartas tú?</span>
+          <div id="p2-subtotal" class="text-xs font-bold text-cayeye-olive">Subtotal: $0</div>
+        </div>
+
+        <!-- Touch Controls -->
+        <div class="flex items-center gap-2 bg-cayeye-cream p-1.5 rounded-2xl border-2 border-cayeye-border">
+          <button 
+            type="button" 
+            onclick="updateQty('p2', -1)" 
+            aria-label="Restar Bolsas Herméticas"
+            class="w-12 h-12 rounded-xl bg-white border border-cayeye-border text-cayeye-olive font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none transition-all"
+            id="p2-btn-minus"
+            disabled
+          >
+            <i class="fa-solid fa-minus text-base"></i>
+          </button>
+
+          <span 
+            id="p2-qty" 
+            class="w-10 text-center font-black text-2xl text-cayeye-olive-dark tracking-tight"
+          >
+            0
+          </span>
+
+          <button 
+            type="button" 
+            onclick="updateQty('p2', 1)" 
+            aria-label="Sumar Bolsas Herméticas"
+            class="w-12 h-12 rounded-xl bg-cayeye-olive text-white font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-cayeye-olive-dark disabled:opacity-40 disabled:pointer-events-none transition-all"
+            id="p2-btn-plus"
+          >
+            <i class="fa-solid fa-plus text-base"></i>
+          </button>
+        </div>
+      </div>
+    </article>
+
+    <!-- Delivery Guarantee for Street Vendors -->
+    <div class="bg-white rounded-2xl p-4 border border-cayeye-border flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center flex-shrink-0 text-xl font-bold">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+      </div>
+      <div>
+        <h3 class="text-xs font-bold text-cayeye-olive-dark">Cero riesgo para tu negocio</h3>
+        <p class="text-[11px] text-gray-500 leading-snug">
+          No tienes que consignar por adelantado. Revisas el insumo en tu puesto y pagas en efectivo o Nequi cuando te lo entreguen.
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- STICKY BOTTOM BAR (Always visible for mobile street vendors) -->
+  <footer class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t-2 border-cayeye-border shadow-sticky-bar px-4 py-3">
+    <div class="max-w-md mx-auto flex items-center justify-between gap-3">
+      
+      <!-- Total Calculation Display -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-1.5">
+          <span class="text-[11px] font-extrabold uppercase tracking-wider text-gray-500">Total a Pagar</span>
+          <span id="savings-badge" class="hidden text-[10px] font-extrabold bg-cayeye-mustard-light text-cayeye-mustard-dark px-1.5 py-0.5 rounded">
+            Ahorras $0
+          </span>
+        </div>
+        <div class="flex items-baseline gap-1">
+          <span id="total-display" class="text-2xl font-black text-cayeye-olive tracking-tight truncate">
+            $ 0
+          </span>
+        </div>
+        <span class="text-[10px] text-gray-400 block -mt-0.5 font-medium">Contra entrega en tu puesto</span>
+      </div>
+
+      <!-- Big WhatsApp Button (Fat-finger size: min 52px height) -->
+      <button 
+        type="button" 
+        onclick="submitOrderToWhatsApp()"
+        id="btn-whatsapp"
+        class="flex-shrink-0 h-14 px-5 bg-cayeye-mustard hover:bg-cayeye-mustard-dark text-cayeye-olive-dark font-black text-base rounded-2xl flex items-center justify-center gap-2.5 shadow-fat-button btn-press active:scale-[0.98] transition-all"
+      >
+        <i class="fa-brands fa-whatsapp text-2xl text-emerald-800"></i>
+        <div class="text-left leading-none">
+          <span class="block text-xs uppercase tracking-wider font-extrabold text-cayeye-olive-dark/80">Confirmar</span>
+          <span class="text-sm font-black tracking-tight">Pedir por WhatsApp</span>
+        </div>
+      </button>
+
+    </div>
+  </footer>
+
+  <!-- Non-blocking Alert Modal (Replacement for native alert) -->
+  <div 
+    id="alert-modal" 
+    class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="alert-modal-title"
+  >
+    <div class="bg-white rounded-3xl p-6 max-w-xs w-full text-center shadow-2xl border-2 border-cayeye-border transform scale-95 transition-transform duration-200" id="alert-modal-card">
+      <div class="w-14 h-14 bg-amber-100 text-cayeye-mustard-dark rounded-full flex items-center justify-center mx-auto mb-3 text-2xl shadow-inner">
+        <i class="fa-solid fa-basket-shopping"></i>
+      </div>
+      <h4 id="alert-modal-title" class="text-lg font-black text-cayeye-olive-dark mb-1">
+        Canasta Vacía
+      </h4>
+      <p id="alert-modal-msg" class="text-sm text-gray-600 font-medium mb-5">
+        Por favor selecciona al menos un producto
+      </p>
+      <button 
+        type="button" 
+        onclick="closeAlertModal()"
+        class="w-full h-12 bg-cayeye-olive text-white font-bold text-sm rounded-xl shadow-fat-button btn-press"
+      >
+        Entendido, seleccionar
+      </button>
+    </div>
+  </div>
+
+  <script>
+    /*
+     * Business Logic & Catalog Configuration for "La Bahía"
+     */
+    const PRODUCTS = {
+      p1: {
+        id: 'p1',
+        name: 'Cebolla Crispy',
+        variant: 'Bolsa 500g',
+        collectivePrice: 11000,
+        normalPrice: 16000,
+        baseReserved: 8,
+        goalTotal: 12,
+        unitLabel: 'uds',
+        qty: 0
+      },
+      p2: {
+        id: 'p2',
+        name: 'Bolsas Herméticas',
+        variant: 'Paquete x 100',
+        collectivePrice: 5500,
+        normalPrice: 8500,
+        baseReserved: 15,
+        goalTotal: 20,
+        unitLabel: 'paqs',
+        qty: 0
+      }
+    };
+
+    const WHATSAPP_PHONE = '573052115960';
+
+    /**
+     * Formats an integer amount as Colombian Pesos (e.g. $ 16.500)
+     */
+    function formatCOP(amount) {
+      return '$ ' + amount.toLocaleString('es-CO');
+    }
+
+    /**
+     * Updates quantities, ensures non-negative numbers, enforces goal limit, and triggers UI sync
+     */
+    function updateQty(productId, change) {
+      const product = PRODUCTS[productId];
+      if (!product) return;
+
+      const newQty = product.qty + change;
+      if (newQty < 0) return;
+
+      // Prevent adding more if collective goal (100%) has been reached
+      if (change > 0 && (product.baseReserved + newQty) > product.goalTotal) {
+        return;
+      }
+
+      product.qty = newQty;
+      renderState();
+    }
+
+    /**
+     * Re-renders the entire interface based on the state of PRODUCTS
+     */
+    function renderState() {
+      let totalToPay = 0;
+      let totalSavings = 0;
+      let totalItems = 0;
+
+      // Update individual products UI
+      for (const key in PRODUCTS) {
+        const p = PRODUCTS[key];
+        const subtotal = p.qty * p.collectivePrice;
+        const savings = p.qty * (p.normalPrice - p.collectivePrice);
+        
+        totalToPay += subtotal;
+        totalSavings += savings;
+        totalItems += p.qty;
+
+        // Counter text
+        const qtyElement = document.getElementById(`${p.id}-qty`);
+        if (qtyElement) {
+          qtyElement.innerText = p.qty;
+        }
+
+        // Subtotal indicator
+        const subtotalElement = document.getElementById(`${p.id}-subtotal`);
+        if (subtotalElement) {
+          subtotalElement.innerText = `Subtotal: ${formatCOP(subtotal)}`;
+        }
+
+        // Minus button state
+        const minusBtn = document.getElementById(`${p.id}-btn-minus`);
+        if (minusBtn) {
+          minusBtn.disabled = p.qty <= 0;
+        }
+
+        // Plus button state (disable when collective goal reaches 100%)
+        const plusBtn = document.getElementById(`${p.id}-btn-plus`);
+        if (plusBtn) {
+          plusBtn.disabled = (p.baseReserved + p.qty) >= p.goalTotal;
+        }
+
+        // Collective Progress calculation with vendor's contribution
+        const currentCollectiveUnits = Math.min(p.goalTotal, p.baseReserved + p.qty);
+        const percentage = Math.min(100, Math.round((currentCollectiveUnits / p.goalTotal) * 100));
+        const slotsLeft = Math.max(0, p.goalTotal - currentCollectiveUnits);
+
+        const progressBar = document.getElementById(`${p.id}-progress-bar`);
+        const progressLabel = document.getElementById(`${p.id}-progress-label`);
+        const slotsLeftEl = document.getElementById(`${p.id}-slots-left`);
+
+        if (progressBar) progressBar.style.width = `${percentage}%`;
+        if (progressLabel) progressLabel.innerText = `${currentCollectiveUnits} de ${p.goalTotal} (${percentage}%)`;
+        
+        if (slotsLeftEl) {
+          if (slotsLeft === 0) {
+            slotsLeftEl.innerHTML = `<span class="text-emerald-700 font-extrabold"><i class="fa-solid fa-check-circle"></i> ¡Meta cumplida! Se pide de inmediato</span>`;
+          } else {
+            slotsLeftEl.innerHTML = `<i class="fa-solid fa-fire text-amber-500"></i> Faltan ${slotsLeft} para cerrar`;
+          }
+        }
+      }
+
+      // Update Bottom Bar Total
+      const totalDisplay = document.getElementById('total-display');
+      if (totalDisplay) {
+        totalDisplay.innerText = formatCOP(totalToPay);
+      }
+
+      // Update Savings Badge
+      const savingsBadge = document.getElementById('savings-badge');
+      if (savingsBadge) {
+        if (totalSavings > 0) {
+          savingsBadge.classList.remove('hidden');
+          savingsBadge.innerText = `Ahorras ${formatCOP(totalSavings)}`;
+        } else {
+          savingsBadge.classList.add('hidden');
+        }
+      }
+
+      // Dynamic styling on the WhatsApp action button
+      const waButton = document.getElementById('btn-whatsapp');
+      if (waButton) {
+        if (totalItems > 0) {
+          waButton.classList.remove('opacity-90');
+          waButton.classList.add('ring-2', 'ring-cayeye-olive');
+        } else {
+          waButton.classList.remove('ring-2', 'ring-cayeye-olive');
+          waButton.classList.add('opacity-90');
+        }
+      }
+    }
+
+    /**
+     * Formats order and opens WhatsApp directly to complete transaction
+     */
+    function submitOrderToWhatsApp() {
+      const activeProducts = Object.values(PRODUCTS).filter(p => p.qty > 0);
+
+      // Validation required: Alert if nothing is selected
+      if (activeProducts.length === 0) {
+        showAlertModal("Por favor selecciona al menos un producto");
+        return;
+      }
+
+      // Calculate total
+      let totalAmount = 0;
+      for (const p of activeProducts) {
+        totalAmount += (p.qty * p.collectivePrice);
+      }
+      const formattedTotal = formatCOP(totalAmount);
+
+      // Construct item summary listing only products with qty > 0
+      // Example: "[Cant] Cebolla Crispy y [Cant] Bolsas Herméticas"
+      let productDetailsString = '';
+      if (activeProducts.length === 1) {
+        const item = activeProducts[0];
+        productDetailsString = `${item.qty} ${item.name}`;
+      } else {
+        const itemsTextArray = activeProducts.map(item => `${item.qty} ${item.name}`);
+        // Join with ' y ' for the last element
+        const lastItem = itemsTextArray.pop();
+        productDetailsString = `${itemsTextArray.join(', ')} y ${lastItem}`;
+      }
+
+      // Plantilla de mensaje con resumen del pedido y campos de entrega listos para diligenciar
+      const message = `¡Hola! Soy un puesto de La Bahía. Me sumo a la compra colectiva de hoy con: ${productDetailsString}. Mi total es ${formattedTotal}. Pago contra entrega en mi puesto.\n\n` +
+        `📋 *Datos:*\n` +
+        `━━━━━━━━━━━━━━━━━━━━\n` +
+        `• Nombre: \n` +
+        `• Celular: \n` +
+        `• Dirección: \n` +
+        `• Forma de pago: `;
+
+      // Generate WhatsApp Link
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMessage}`;
+
+      // Dispatch order via WhatsApp
+      window.open(whatsappUrl, '_blank');
+    }
+
+    /**
+     * Custom accessible Alert Modal
+     */
+    function showAlertModal(msg) {
+      const modal = document.getElementById('alert-modal');
+      const card = document.getElementById('alert-modal-card');
+      const msgEl = document.getElementById('alert-modal-msg');
+      if (!modal || !card) return;
+
+      if (msgEl) msgEl.innerText = msg;
+
+      modal.classList.remove('opacity-0', 'pointer-events-none');
+      modal.classList.add('opacity-100');
+      card.classList.remove('scale-95');
+      card.classList.add('scale-100');
+    }
+
+    function closeAlertModal() {
+      const modal = document.getElementById('alert-modal');
+      const card = document.getElementById('alert-modal-card');
+      if (!modal || !card) return;
+
+      modal.classList.add('opacity-0', 'pointer-events-none');
+      modal.classList.remove('opacity-100');
+      card.classList.add('scale-95');
+      card.classList.remove('scale-100');
+    }
+
+    // Close modal on click outside
+    document.getElementById('alert-modal')?.addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeAlertModal();
+      }
+    });
+
+    // Initial render on load
+    document.addEventListener('DOMContentLoaded', () => {
+      renderState();
+    });
+  </script>
+</body>
+</html>
