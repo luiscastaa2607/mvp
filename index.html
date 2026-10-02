@@ -173,21 +173,21 @@
           </div>
         </div>
 
-        <!-- Progress Bar (Simulated: 8 reserved base) -->
+        <!-- Progress Bar (Inicia en 0 en tiempo real) -->
         <div class="mt-3 pt-2 border-t border-cayeye-border/40">
           <div class="flex justify-between items-center text-[11px] mb-1 font-semibold">
             <span class="text-gray-600 flex items-center gap-1">
               <i class="fa-solid fa-boxes-stacked text-cayeye-olive"></i>
               <span>Avance de la caja:</span>
             </span>
-            <span id="p1-progress-label" class="text-cayeye-olive font-extrabold">8 de 12 (66%)</span>
+            <span id="p1-progress-label" class="text-cayeye-olive font-extrabold">0 de 12 (0%)</span>
           </div>
           <!-- Bar Track -->
           <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden p-0.5">
-            <div id="p1-progress-bar" class="bg-cayeye-olive h-full rounded-full transition-all duration-300" style="width: 66%;"></div>
+            <div id="p1-progress-bar" class="bg-cayeye-olive h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
           </div>
           <div class="flex justify-between items-center mt-1 text-[10px] text-gray-500 font-medium">
-            <span id="p1-slots-left" class="text-cayeye-mustard-dark font-bold"><i class="fa-solid fa-fire text-amber-500"></i> Faltan 4 para cerrar</span>
+            <span id="p1-slots-left" class="text-cayeye-mustard-dark font-bold"><i class="fa-solid fa-fire text-amber-500"></i> Faltan 12 para cerrar</span>
             <span>Meta: 12 unidades</span>
           </div>
         </div>
@@ -276,21 +276,21 @@
           </div>
         </div>
 
-        <!-- Progress Bar (Simulated: 15 reserved base) -->
+        <!-- Progress Bar (Inicia en 0 en tiempo real) -->
         <div class="mt-3 pt-2 border-t border-cayeye-border/40">
           <div class="flex justify-between items-center text-[11px] mb-1 font-semibold">
             <span class="text-gray-600 flex items-center gap-1">
               <i class="fa-solid fa-layer-group text-cayeye-olive"></i>
               <span>Avance de la paca:</span>
             </span>
-            <span id="p2-progress-label" class="text-cayeye-olive font-extrabold">15 de 20 (75%)</span>
+            <span id="p2-progress-label" class="text-cayeye-olive font-extrabold">0 de 20 (0%)</span>
           </div>
           <!-- Bar Track -->
           <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden p-0.5">
-            <div id="p2-progress-bar" class="bg-cayeye-olive h-full rounded-full transition-all duration-300" style="width: 75%;"></div>
+            <div id="p2-progress-bar" class="bg-cayeye-olive h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
           </div>
           <div class="flex justify-between items-center mt-1 text-[10px] text-gray-500 font-medium">
-            <span id="p2-slots-left" class="text-cayeye-mustard-dark font-bold"><i class="fa-solid fa-fire text-amber-500"></i> Faltan 5 para cerrar</span>
+            <span id="p2-slots-left" class="text-cayeye-mustard-dark font-bold"><i class="fa-solid fa-fire text-amber-500"></i> Faltan 20 para cerrar</span>
             <span>Meta: 20 paquetes</span>
           </div>
         </div>
@@ -427,7 +427,7 @@
         variant: 'Bolsa 500g',
         collectivePrice: 11000,
         normalPrice: 16000,
-        baseReserved: 8,
+        baseReserved: 0,
         goalTotal: 12,
         unitLabel: 'uds',
         qty: 0
@@ -438,7 +438,7 @@
         variant: 'Paquete x 100',
         collectivePrice: 5500,
         normalPrice: 8500,
-        baseReserved: 15,
+        baseReserved: 0,
         goalTotal: 20,
         unitLabel: 'paqs',
         qty: 0
