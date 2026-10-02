@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Compras Colectivas - La Bahía</title>
+  
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -44,7 +45,6 @@
   </script>
 
   <style>
-    /* Fat-finger friendly touch behaviors */
     * {
       -webkit-tap-highlight-color: transparent;
       user-select: none;
@@ -52,43 +52,48 @@
     input, button {
       user-select: auto;
     }
-    /* Smooth button press feedback */
     .btn-press:active {
       transform: translateY(2px);
       box-shadow: 0 1px 0 0 rgba(0,0,0,0.18);
     }
-    /* Pulse badge for urgency */
-    @keyframes subtlePulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.85; transform: scale(1.03); }
+    /* Dynamic progress bar animation */
+    .progress-bar-fill {
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .animate-badge {
-      animation: subtlePulse 2.5s infinite ease-in-out;
+    /* Number pulse animation on change */
+    @keyframes numPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); color: #D99D26; }
+      100% { transform: scale(1); }
+    }
+    .pop-anim {
+      animation: numPop 0.25s ease-out;
+    }
+    /* Bar glow effect when progress moves */
+    @keyframes barGlow {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.25); }
+    }
+    .glow-anim {
+      animation: barGlow 0.4s ease-in-out;
     }
   </style>
 </head>
 
 <body class="bg-cayeye-cream text-cayeye-text font-sans antialiased min-h-screen flex flex-col pb-36">
 
-  <!-- Top Micro-announcement Bar -->
-  <div class="bg-cayeye-olive-dark text-white text-xs font-semibold py-1.5 px-4 text-center flex flex-wrap items-center justify-center gap-2">
-    <span class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-400/30">
-      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-      <span id="sync-indicator">🟢 Sincronizado en tiempo real</span>
+  <!-- Micro-announcement Bar (Clean, reassuring live status) -->
+  <div class="bg-cayeye-olive-dark text-white text-xs font-semibold py-2 px-4 text-center flex items-center justify-center gap-2 shadow-inner">
+    <span class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 text-[11px] font-bold px-2.5 py-0.5 rounded-full border border-emerald-400/30">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+      <span id="sync-indicator">🟢 Compra comunitaria en vivo</span>
     </span>
-    <span>Paga contra entrega en tu puesto de comida • La Bahía</span>
-    <button 
-      type="button" 
-      onclick="resetCollectiveData()" 
-      class="text-[10px] underline text-cayeye-mustard hover:text-white ml-1 font-normal opacity-80 transition-opacity"
-      title="Reiniciar unidades comunitarias para pruebas">
-      [Reiniciar prueba]
-    </button>
+    <span class="hidden sm:inline">•</span>
+    <span class="text-[11px] text-white/90">Paga contra entrega en tu puesto de comida</span>
   </div>
 
   <!-- Header Section -->
   <header class="bg-cayeye-olive text-white px-5 pt-6 pb-7 shadow-md rounded-b-3xl relative overflow-hidden">
-    <!-- Decorative background elements -->
     <div class="absolute -right-6 -bottom-8 w-28 h-28 bg-white/5 rounded-full pointer-events-none"></div>
     <div class="absolute left-1/2 -top-10 w-40 h-40 bg-cayeye-mustard/10 rounded-full blur-xl pointer-events-none"></div>
 
@@ -109,7 +114,7 @@
         Precios de mayorista sin comprar la caja entera. Aparta desde 1 unidad.
       </p>
 
-      <!-- Quick Benefit Bullets -->
+      <!-- Key Benefits -->
       <div class="grid grid-cols-2 gap-2 mt-4 pt-3 border-t border-white/15 text-xs text-white/95">
         <div class="flex items-center gap-1.5">
           <i class="fa-solid fa-circle-check text-cayeye-mustard"></i>
@@ -125,31 +130,29 @@
 
   <main class="max-w-md mx-auto w-full px-4 mt-4 space-y-4">
     
-    <!-- Mini Helper Note -->
-    <div class="bg-cayeye-mustard-light/70 border border-cayeye-mustard/40 rounded-2xl p-3.5 flex items-start gap-3 shadow-sm">
-      <div class="w-8 h-8 rounded-full bg-cayeye-mustard/20 text-cayeye-mustard-dark flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-sm">
-        <i class="fa-solid fa-lightbulb"></i>
+    <!-- Explanatory Banner -->
+    <div class="bg-cayeye-mustard-light/80 border border-cayeye-mustard/40 rounded-2xl p-3.5 flex items-start gap-3 shadow-sm">
+      <div class="w-8 h-8 rounded-full bg-cayeye-mustard/25 text-cayeye-mustard-dark flex items-center justify-center flex-shrink-0 mt-0.5 font-bold text-sm">
+        <i class="fa-solid fa-arrow-trend-up"></i>
       </div>
       <div>
-        <p class="text-xs text-cayeye-text font-semibold leading-snug">
-          ¿Cómo funciona?
+        <p class="text-xs text-cayeye-text font-bold leading-snug">
+          La barra avanza con cada unidad que agregues
         </p>
         <p class="text-xs text-cayeye-text/80 leading-relaxed mt-0.5">
-          Tú apartas solo lo que necesitas. Cuando se completa la meta entre todos los puestos, el mayorista despacha a precio especial.
+          Cada vez que tocas el botón <strong class="text-cayeye-olive">+</strong> sumas tu parte a la meta de la caja. Al completarse, el distribuidor despacha con precio especial.
         </p>
       </div>
     </div>
 
-    <!-- PRODUCT 1: CEBOLLA CRISPY -->
-    <article class="bg-cayeye-card rounded-2xl border-2 border-cayeye-border p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-      <!-- Collective badge -->
+    <article class="bg-cayeye-card rounded-2xl border-2 border-cayeye-border p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden" id="card-p1">
       <div class="flex items-start justify-between gap-3 mb-2">
         <div>
-          <div class="flex items-center gap-1.5 mb-1">
+          <div class="flex items-center gap-1.5 mb-1 flex-wrap">
             <span class="bg-cayeye-olive/10 text-cayeye-olive font-bold text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-md">
               Insumo Clave
             </span>
-            <span class="bg-cayeye-mustard text-cayeye-olive-dark text-[11px] font-black px-2 py-0.5 rounded-md shadow-xs animate-badge">
+            <span class="bg-cayeye-mustard text-cayeye-olive-dark text-[11px] font-black px-2 py-0.5 rounded-md shadow-xs">
               Ahorras $5.000 / ud
             </span>
           </div>
@@ -159,13 +162,12 @@
           <p class="text-xs text-gray-500 font-medium">Bolsa 500g • Calidad Premium para hamburguesas y perros</p>
         </div>
         
-        <!-- Product Icon Visual Badge -->
         <div class="w-12 h-12 rounded-xl bg-cayeye-cream border border-cayeye-border flex items-center justify-center text-cayeye-olive text-2xl flex-shrink-0 shadow-inner">
           <i class="fa-solid fa-bowl-food"></i>
         </div>
       </div>
 
-      <!-- Pricing Block -->
+      <!-- Pricing Box -->
       <div class="bg-cayeye-cream/70 rounded-xl p-3 border border-cayeye-border/60 my-3">
         <div class="flex items-baseline justify-between">
           <div>
@@ -177,46 +179,49 @@
           </div>
           <div class="text-right">
             <span class="text-[10px] text-gray-500 font-medium block">Meta colectiva:</span>
-            <span class="text-xs font-bold text-cayeye-olive-dark bg-white px-2 py-0.5 rounded border border-cayeye-border inline-block">
+            <span class="text-xs font-bold text-cayeye-olive-dark bg-white px-2 py-0.5 rounded border border-cayeye-border inline-block shadow-xs">
               Caja x 12 uds
             </span>
           </div>
         </div>
 
-        <!-- Progress Bar (Inicia en 0 en tiempo real) -->
-        <div class="mt-3 pt-2 border-t border-cayeye-border/40">
-          <div class="flex justify-between items-center text-[11px] mb-1 font-semibold">
-            <span class="text-gray-600 flex items-center gap-1">
+        <!-- Dynamic Real-time Progress Bar -->
+        <div class="mt-3 pt-2.5 border-t border-cayeye-border/50">
+          <div class="flex justify-between items-center text-[11px] mb-1.5 font-bold">
+            <span class="text-gray-600 flex items-center gap-1.5">
               <i class="fa-solid fa-boxes-stacked text-cayeye-olive"></i>
-              <span>Avance de la caja:</span>
+              <span>Progreso de la caja:</span>
             </span>
-            <span id="p1-progress-label" class="text-cayeye-olive font-extrabold">0 de 12 (0%)</span>
+            <span id="p1-progress-label" class="text-cayeye-olive font-black tracking-tight text-xs bg-white px-2 py-0.5 rounded border border-cayeye-border">
+              0 de 12 (0%)
+            </span>
           </div>
           <!-- Bar Track -->
-          <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden p-0.5">
-            <div id="p1-progress-bar" class="bg-cayeye-olive h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+          <div class="w-full bg-gray-200 rounded-full h-3.5 overflow-hidden p-0.5 shadow-inner">
+            <div id="p1-progress-bar" class="progress-bar-fill bg-gradient-to-r from-cayeye-olive to-cayeye-olive-light h-full rounded-full" style="width: 0%;"></div>
           </div>
-          <div class="flex justify-between items-center mt-1 text-[10px] text-gray-500 font-medium">
-            <span id="p1-slots-left" class="text-cayeye-mustard-dark font-bold"><i class="fa-solid fa-fire text-amber-500"></i> Faltan 12 para cerrar</span>
-            <span>Meta: 12 unidades</span>
+          <div class="flex justify-between items-center mt-1.5 text-[11px]">
+            <span id="p1-slots-left" class="text-cayeye-mustard-dark font-extrabold flex items-center gap-1">
+              <i class="fa-solid fa-fire text-amber-500"></i> Faltan 12 para cerrar
+            </span>
+            <span class="text-gray-400 font-medium text-[10px]">Meta: 12 uds</span>
           </div>
         </div>
       </div>
 
-      <!-- Counter & Selection Action (Fat-Finger Friendly) -->
+      <!-- Touch Controls -->
       <div class="flex items-center justify-between pt-1">
         <div class="text-xs font-semibold text-gray-600">
           <span>¿Cuántas apartas tú?</span>
-          <div id="p1-subtotal" class="text-xs font-bold text-cayeye-olive">Subtotal: $0</div>
+          <div id="p1-subtotal" class="text-xs font-extrabold text-cayeye-olive mt-0.5">Subtotal: $0</div>
         </div>
 
-        <!-- Touch Controls -->
         <div class="flex items-center gap-2 bg-cayeye-cream p-1.5 rounded-2xl border-2 border-cayeye-border">
           <button 
             type="button" 
             onclick="updateQty('p1', -1)" 
             aria-label="Restar una Cebolla Crispy"
-            class="w-12 h-12 rounded-xl bg-white border border-cayeye-border text-cayeye-olive font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none transition-all"
+            class="w-12 h-12 rounded-xl bg-white border border-cayeye-border text-cayeye-olive font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
             id="p1-btn-minus"
             disabled
           >
@@ -225,7 +230,7 @@
 
           <span 
             id="p1-qty" 
-            class="w-10 text-center font-black text-2xl text-cayeye-olive-dark tracking-tight"
+            class="w-10 text-center font-black text-2xl text-cayeye-olive-dark tracking-tight inline-block"
           >
             0
           </span>
@@ -234,7 +239,7 @@
             type="button" 
             onclick="updateQty('p1', 1)" 
             aria-label="Sumar una Cebolla Crispy"
-            class="w-12 h-12 rounded-xl bg-cayeye-olive text-white font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-cayeye-olive-dark disabled:opacity-40 disabled:pointer-events-none transition-all"
+            class="w-12 h-12 rounded-xl bg-cayeye-olive text-white font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-cayeye-olive-dark disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
             id="p1-btn-plus"
           >
             <i class="fa-solid fa-plus text-base"></i>
@@ -243,16 +248,14 @@
       </div>
     </article>
 
-    <!-- PRODUCT 2: BOLSAS HERMÉTICAS -->
-    <article class="bg-cayeye-card rounded-2xl border-2 border-cayeye-border p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
-      <!-- Collective badge -->
+    <article class="bg-cayeye-card rounded-2xl border-2 border-cayeye-border p-4 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden" id="card-p2">
       <div class="flex items-start justify-between gap-3 mb-2">
         <div>
-          <div class="flex items-center gap-1.5 mb-1">
+          <div class="flex items-center gap-1.5 mb-1 flex-wrap">
             <span class="bg-cayeye-olive/10 text-cayeye-olive font-bold text-[11px] uppercase tracking-wide px-2 py-0.5 rounded-md">
               Empaque Clave
             </span>
-            <span class="bg-cayeye-mustard text-cayeye-olive-dark text-[11px] font-black px-2 py-0.5 rounded-md shadow-xs animate-badge">
+            <span class="bg-cayeye-mustard text-cayeye-olive-dark text-[11px] font-black px-2 py-0.5 rounded-md shadow-xs">
               Ahorras $3.000 / paq
             </span>
           </div>
@@ -262,13 +265,12 @@
           <p class="text-xs text-gray-500 font-medium">Paquete x 100 • Ziploc grueso para domicilios y salsas</p>
         </div>
         
-        <!-- Product Icon Visual Badge -->
         <div class="w-12 h-12 rounded-xl bg-cayeye-cream border border-cayeye-border flex items-center justify-center text-cayeye-olive text-2xl flex-shrink-0 shadow-inner">
           <i class="fa-solid fa-box-open"></i>
         </div>
       </div>
 
-      <!-- Pricing Block -->
+      <!-- Pricing Box -->
       <div class="bg-cayeye-cream/70 rounded-xl p-3 border border-cayeye-border/60 my-3">
         <div class="flex items-baseline justify-between">
           <div>
@@ -280,46 +282,49 @@
           </div>
           <div class="text-right">
             <span class="text-[10px] text-gray-500 font-medium block">Meta colectiva:</span>
-            <span class="text-xs font-bold text-cayeye-olive-dark bg-white px-2 py-0.5 rounded border border-cayeye-border inline-block">
+            <span class="text-xs font-bold text-cayeye-olive-dark bg-white px-2 py-0.5 rounded border border-cayeye-border inline-block shadow-xs">
               Paca x 20 paqs
             </span>
           </div>
         </div>
 
-        <!-- Progress Bar (Inicia en 0 en tiempo real) -->
-        <div class="mt-3 pt-2 border-t border-cayeye-border/40">
-          <div class="flex justify-between items-center text-[11px] mb-1 font-semibold">
-            <span class="text-gray-600 flex items-center gap-1">
+        <!-- Dynamic Real-time Progress Bar -->
+        <div class="mt-3 pt-2.5 border-t border-cayeye-border/50">
+          <div class="flex justify-between items-center text-[11px] mb-1.5 font-bold">
+            <span class="text-gray-600 flex items-center gap-1.5">
               <i class="fa-solid fa-layer-group text-cayeye-olive"></i>
-              <span>Avance de la paca:</span>
+              <span>Progreso de la paca:</span>
             </span>
-            <span id="p2-progress-label" class="text-cayeye-olive font-extrabold">0 de 20 (0%)</span>
+            <span id="p2-progress-label" class="text-cayeye-olive font-black tracking-tight text-xs bg-white px-2 py-0.5 rounded border border-cayeye-border">
+              0 de 20 (0%)
+            </span>
           </div>
           <!-- Bar Track -->
-          <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden p-0.5">
-            <div id="p2-progress-bar" class="bg-cayeye-olive h-full rounded-full transition-all duration-300" style="width: 0%;"></div>
+          <div class="w-full bg-gray-200 rounded-full h-3.5 overflow-hidden p-0.5 shadow-inner">
+            <div id="p2-progress-bar" class="progress-bar-fill bg-gradient-to-r from-cayeye-olive to-cayeye-olive-light h-full rounded-full" style="width: 0%;"></div>
           </div>
-          <div class="flex justify-between items-center mt-1 text-[10px] text-gray-500 font-medium">
-            <span id="p2-slots-left" class="text-cayeye-mustard-dark font-bold"><i class="fa-solid fa-fire text-amber-500"></i> Faltan 20 para cerrar</span>
-            <span>Meta: 20 paquetes</span>
+          <div class="flex justify-between items-center mt-1.5 text-[11px]">
+            <span id="p2-slots-left" class="text-cayeye-mustard-dark font-extrabold flex items-center gap-1">
+              <i class="fa-solid fa-fire text-amber-500"></i> Faltan 20 para cerrar
+            </span>
+            <span class="text-gray-400 font-medium text-[10px]">Meta: 20 paqs</span>
           </div>
         </div>
       </div>
 
-      <!-- Counter & Selection Action (Fat-Finger Friendly) -->
+      <!-- Touch Controls -->
       <div class="flex items-center justify-between pt-1">
         <div class="text-xs font-semibold text-gray-600">
           <span>¿Cuántas apartas tú?</span>
-          <div id="p2-subtotal" class="text-xs font-bold text-cayeye-olive">Subtotal: $0</div>
+          <div id="p2-subtotal" class="text-xs font-extrabold text-cayeye-olive mt-0.5">Subtotal: $0</div>
         </div>
 
-        <!-- Touch Controls -->
         <div class="flex items-center gap-2 bg-cayeye-cream p-1.5 rounded-2xl border-2 border-cayeye-border">
           <button 
             type="button" 
             onclick="updateQty('p2', -1)" 
             aria-label="Restar Bolsas Herméticas"
-            class="w-12 h-12 rounded-xl bg-white border border-cayeye-border text-cayeye-olive font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-gray-100 disabled:opacity-40 disabled:pointer-events-none transition-all"
+            class="w-12 h-12 rounded-xl bg-white border border-cayeye-border text-cayeye-olive font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-gray-100 disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
             id="p2-btn-minus"
             disabled
           >
@@ -328,7 +333,7 @@
 
           <span 
             id="p2-qty" 
-            class="w-10 text-center font-black text-2xl text-cayeye-olive-dark tracking-tight"
+            class="w-10 text-center font-black text-2xl text-cayeye-olive-dark tracking-tight inline-block"
           >
             0
           </span>
@@ -337,7 +342,7 @@
             type="button" 
             onclick="updateQty('p2', 1)" 
             aria-label="Sumar Bolsas Herméticas"
-            class="w-12 h-12 rounded-xl bg-cayeye-olive text-white font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-cayeye-olive-dark disabled:opacity-40 disabled:pointer-events-none transition-all"
+            class="w-12 h-12 rounded-xl bg-cayeye-olive text-white font-black text-xl flex items-center justify-center shadow-fat-button btn-press active:bg-cayeye-olive-dark disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
             id="p2-btn-plus"
           >
             <i class="fa-solid fa-plus text-base"></i>
@@ -346,22 +351,20 @@
       </div>
     </article>
 
-    <!-- Delivery Guarantee for Street Vendors -->
-    <div class="bg-white rounded-2xl p-4 border border-cayeye-border flex items-center gap-3">
+    <div class="bg-white rounded-2xl p-4 border border-cayeye-border flex items-center gap-3 shadow-xs">
       <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center flex-shrink-0 text-xl font-bold">
         <i class="fa-solid fa-hand-holding-dollar"></i>
       </div>
       <div>
         <h3 class="text-xs font-bold text-cayeye-olive-dark">Cero riesgo para tu negocio</h3>
         <p class="text-[11px] text-gray-500 leading-snug">
-          No tienes que consignar por adelantado. Revisas el insumo en tu puesto y pagas en efectivo o Nequi cuando te lo entreguen.
+          No tienes que pagar por adelantado. Revisas el insumo en tu puesto y pagas en efectivo o Nequi cuando te lo entreguen.
         </p>
       </div>
     </div>
 
   </main>
 
-  <!-- STICKY BOTTOM BAR (Always visible for mobile street vendors) -->
   <footer class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t-2 border-cayeye-border shadow-sticky-bar px-4 py-3">
     <div class="max-w-md mx-auto flex items-center justify-between gap-3">
       
@@ -381,12 +384,12 @@
         <span class="text-[10px] text-gray-400 block -mt-0.5 font-medium">Contra entrega en tu puesto</span>
       </div>
 
-      <!-- Big WhatsApp Button (Fat-finger size: min 52px height) -->
+      <!-- Fat-finger WhatsApp Order Button -->
       <button 
         type="button" 
         onclick="submitOrderToWhatsApp()"
         id="btn-whatsapp"
-        class="flex-shrink-0 h-14 px-5 bg-cayeye-mustard hover:bg-cayeye-mustard-dark text-cayeye-olive-dark font-black text-base rounded-2xl flex items-center justify-center gap-2.5 shadow-fat-button btn-press active:scale-[0.98] transition-all"
+        class="flex-shrink-0 h-14 px-5 bg-cayeye-mustard hover:bg-cayeye-mustard-dark text-cayeye-olive-dark font-black text-base rounded-2xl flex items-center justify-center gap-2.5 shadow-fat-button btn-press active:scale-[0.98] transition-all cursor-pointer"
       >
         <i class="fa-brands fa-whatsapp text-2xl text-emerald-800"></i>
         <div class="text-left leading-none">
@@ -398,7 +401,6 @@
     </div>
   </footer>
 
-  <!-- Non-blocking Alert Modal (Replacement for native alert) -->
   <div 
     id="alert-modal" 
     class="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-200"
@@ -419,19 +421,18 @@
       <button 
         type="button" 
         onclick="closeAlertModal()"
-        class="w-full h-12 bg-cayeye-olive text-white font-bold text-sm rounded-xl shadow-fat-button btn-press"
+        class="w-full h-12 bg-cayeye-olive text-white font-bold text-sm rounded-xl shadow-fat-button btn-press cursor-pointer"
       >
         Entendido, seleccionar
       </button>
     </div>
   </div>
 
-  <!-- Firebase & Realtime Multi-device Logic -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+  <script>
+    /**
+     * Primary Application State
+     * Fully reactive and independent of external networks so interaction NEVER fails.
+     */
     const PRODUCTS = {
       p1: {
         id: 'p1',
@@ -439,10 +440,10 @@
         variant: 'Bolsa 500g',
         collectivePrice: 11000,
         normalPrice: 16000,
-        baseReserved: 0, // Unidades acumuladas por otros puestos en tiempo real
+        communityCount: 0, // Unidades sumadas por otros puestos
+        qty: 0,            // Unidades seleccionadas por este puesto
         goalTotal: 12,
-        unitLabel: 'uds',
-        qty: 0 // Unidades que aparta este puesto en su sesión
+        unitLabel: 'uds'
       },
       p2: {
         id: 'p2',
@@ -450,50 +451,69 @@
         variant: 'Paquete x 100',
         collectivePrice: 5500,
         normalPrice: 8500,
-        baseReserved: 0,
+        communityCount: 0,
+        qty: 0,
         goalTotal: 20,
-        unitLabel: 'paqs',
-        qty: 0
+        unitLabel: 'paqs'
       }
     };
 
     const WHATSAPP_PHONE = '573052115960';
-
-    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-    let db = null;
-    let auth = null;
-    let currentUser = null;
-    let syncDebounceTimer = null;
+    
+    // Unique device session identifier to avoid collisions
+    const DEVICE_ID = 'dev_' + Math.random().toString(36).substring(2, 9);
 
     /**
-     * Formats an integer amount as Colombian Pesos (e.g. $ 16.500)
+     * Formats numbers into Colombian Peso notation (e.g. $ 11.000)
      */
     function formatCOP(amount) {
-      return '$ ' + amount.toLocaleString('es-CO');
+      return '$ ' + Math.round(amount).toLocaleString('es-CO');
     }
 
     /**
-     * Updates quantities, checks limits and triggers cloud synchronization
+     * Handles adding or subtracting units.
+     * Guaranteed to update UI synchronously and immediately.
      */
     function updateQty(productId, change) {
       const product = PRODUCTS[productId];
       if (!product) return;
 
-      const newQty = product.qty + change;
-      if (newQty < 0) return;
+      const potentialNewQty = product.qty + change;
+      if (potentialNewQty < 0) return;
 
-      // Impide exceder la meta colectiva (lo que otros puestos ya reservaron + lo que este puesto suma)
-      if (change > 0 && (product.baseReserved + newQty) > product.goalTotal) {
+      // Ensure collective sum does not exceed 100% of the box / pack
+      const currentTotal = product.communityCount + product.qty;
+      if (change > 0 && currentTotal >= product.goalTotal) {
         return;
       }
 
-      product.qty = newQty;
+      product.qty = potentialNewQty;
+
+      // Animate the quantity number
+      const qtyEl = document.getElementById(`${product.id}-qty`);
+      if (qtyEl) {
+        qtyEl.classList.remove('pop-anim');
+        void qtyEl.offsetWidth; // Force CSS reflow
+        qtyEl.classList.add('pop-anim');
+      }
+
+      // Animate the progress bar with a flash
+      const barEl = document.getElementById(`${product.id}-progress-bar`);
+      if (barEl) {
+        barEl.classList.remove('glow-anim');
+        void barEl.offsetWidth;
+        barEl.classList.add('glow-anim');
+      }
+
+      // Immediate synchronous UI refresh
       renderState();
-      scheduleCloudSync();
+
+      // Broadcast changes across tabs / devices
+      broadcastChange();
     }
 
     /**
-     * Re-renders the entire interface based on the state of PRODUCTS
+     * Updates all DOM elements (Progress bar, labels, totals, buttons state)
      */
     function renderState() {
       let totalToPay = 0;
@@ -504,63 +524,68 @@
         const p = PRODUCTS[key];
         const subtotal = p.qty * p.collectivePrice;
         const savings = p.qty * (p.normalPrice - p.collectivePrice);
-        
+
         totalToPay += subtotal;
         totalSavings += savings;
         totalItems += p.qty;
 
-        // Counter text
-        const qtyElement = document.getElementById(`${p.id}-qty`);
-        if (qtyElement) {
-          qtyElement.innerText = p.qty;
-        }
+        // Current count
+        const qtyEl = document.getElementById(`${p.id}-qty`);
+        if (qtyEl) qtyEl.innerText = p.qty;
 
         // Subtotal indicator
-        const subtotalElement = document.getElementById(`${p.id}-subtotal`);
-        if (subtotalElement) {
-          subtotalElement.innerText = `Subtotal: ${formatCOP(subtotal)}`;
+        const subtotalEl = document.getElementById(`${p.id}-subtotal`);
+        if (subtotalEl) {
+          subtotalEl.innerText = `Subtotal: ${formatCOP(subtotal)}`;
         }
 
         // Minus button state
         const minusBtn = document.getElementById(`${p.id}-btn-minus`);
         if (minusBtn) {
-          minusBtn.disabled = p.qty <= 0;
+          minusBtn.disabled = (p.qty <= 0);
         }
 
-        // Plus button state: Deshabilitado si entre todos los puestos se llegó al 100%
+        // Total collective calculation: Community + Current Vendor
+        const totalCollectiveUnits = Math.min(p.goalTotal, p.communityCount + p.qty);
+        const percentage = Math.min(100, Math.round((totalCollectiveUnits / p.goalTotal) * 100));
+        const slotsLeft = Math.max(0, p.goalTotal - totalCollectiveUnits);
+
+        // Plus button state: Disabled when 100% reached
         const plusBtn = document.getElementById(`${p.id}-btn-plus`);
         if (plusBtn) {
-          plusBtn.disabled = (p.baseReserved + p.qty) >= p.goalTotal;
+          plusBtn.disabled = (totalCollectiveUnits >= p.goalTotal);
         }
 
-        // Collective Progress calculation (Suma en vivo: Otros puestos + este puesto)
-        const currentCollectiveUnits = Math.min(p.goalTotal, p.baseReserved + p.qty);
-        const percentage = Math.min(100, Math.round((currentCollectiveUnits / p.goalTotal) * 100));
-        const slotsLeft = Math.max(0, p.goalTotal - currentCollectiveUnits);
+        // Progress bar width
+        const barEl = document.getElementById(`${p.id}-progress-bar`);
+        if (barEl) {
+          barEl.style.width = `${percentage}%`;
+        }
 
-        const progressBar = document.getElementById(`${p.id}-progress-bar`);
+        // Progress text label
         const progressLabel = document.getElementById(`${p.id}-progress-label`);
-        const slotsLeftEl = document.getElementById(`${p.id}-slots-left`);
+        if (progressLabel) {
+          progressLabel.innerText = `${totalCollectiveUnits} de ${p.goalTotal} (${percentage}%)`;
+        }
 
-        if (progressBar) progressBar.style.width = `${percentage}%`;
-        if (progressLabel) progressLabel.innerText = `${currentCollectiveUnits} de ${p.goalTotal} (${percentage}%)`;
-        
+        // Slots remaining status text
+        const slotsLeftEl = document.getElementById(`${p.id}-slots-left`);
         if (slotsLeftEl) {
           if (slotsLeft === 0) {
-            slotsLeftEl.innerHTML = `<span class="text-emerald-700 font-extrabold"><i class="fa-solid fa-check-circle"></i> ¡Meta cumplida! Se pide de inmediato</span>`;
+            slotsLeftEl.innerHTML = `<span class="text-emerald-700 font-black"><i class="fa-solid fa-circle-check"></i> ¡Caja completa! Despacho inmediato</span>`;
           } else {
             slotsLeftEl.innerHTML = `<i class="fa-solid fa-fire text-amber-500"></i> Faltan ${slotsLeft} para cerrar`;
           }
         }
       }
 
-      // Update Bottom Bar Total
+      // Bottom bar total
       const totalDisplay = document.getElementById('total-display');
       if (totalDisplay) {
         totalDisplay.innerText = formatCOP(totalToPay);
       }
 
-      // Update Savings Badge
+      // Savings badge
       const savingsBadge = document.getElementById('savings-badge');
       if (savingsBadge) {
         if (totalSavings > 0) {
@@ -584,89 +609,15 @@
       }
     }
 
-    function scheduleCloudSync() {
-      if (!currentUser || !db) return;
-      clearTimeout(syncDebounceTimer);
-      syncDebounceTimer = setTimeout(async () => {
-        try {
-          const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'reservations', currentUser.uid);
-          await setDoc(userDocRef, {
-            p1: PRODUCTS.p1.qty,
-            p2: PRODUCTS.p2.qty,
-            updatedAt: Date.now()
-          }, { merge: true });
-        } catch (err) {
-          console.error("Error al sincronizar con la nube:", err);
-        }
-      }, 150);
-    }
-
-    function setupRealtimeListener() {
-      if (!db || !currentUser) return;
-      const reservationsCol = collection(db, 'artifacts', appId, 'public', 'data', 'reservations');
-
-      onSnapshot(reservationsCol, (snapshot) => {
-        let otherVendorsP1 = 0;
-        let otherVendorsP2 = 0;
-        let activeDevicesCount = 0;
-
-        snapshot.forEach((docSnap) => {
-          const data = docSnap.data();
-          if (docSnap.id !== currentUser.uid) {
-            otherVendorsP1 += Number(data.p1 || 0);
-            otherVendorsP2 += Number(data.p2 || 0);
-            if ((data.p1 || 0) > 0 || (data.p2 || 0) > 0) {
-              activeDevicesCount++;
-            }
-          }
-        });
-
-        // Actualiza la base comunitaria aportada por los otros dispositivos
-        PRODUCTS.p1.baseReserved = otherVendorsP1;
-        PRODUCTS.p2.baseReserved = otherVendorsP2;
-
-        // Ajusta las cantidades locales si los otros puestos ya coparon el cupo
-        if (PRODUCTS.p1.baseReserved + PRODUCTS.p1.qty > PRODUCTS.p1.goalTotal) {
-          PRODUCTS.p1.qty = Math.max(0, PRODUCTS.p1.goalTotal - PRODUCTS.p1.baseReserved);
-        }
-        if (PRODUCTS.p2.baseReserved + PRODUCTS.p2.qty > PRODUCTS.p2.goalTotal) {
-          PRODUCTS.p2.qty = Math.max(0, PRODUCTS.p2.goalTotal - PRODUCTS.p2.baseReserved);
-        }
-
-        const syncEl = document.getElementById('sync-indicator');
-        if (syncEl) {
-          syncEl.innerText = activeDevicesCount > 0 
-            ? `🟢 ${activeDevicesCount + 1} puestos conectados en vivo`
-            : `🟢 Sincronizado en tiempo real`;
-        }
-
-        renderState();
-      }, (error) => {
-        console.error("Error en escucha en tiempo real:", error);
-      });
-    }
-
-    async function submitOrderToWhatsApp() {
+    /**
+     * Submits order to WhatsApp with formatted items and client delivery template
+     */
+    function submitOrderToWhatsApp() {
       const activeProducts = Object.values(PRODUCTS).filter(p => p.qty > 0);
 
       if (activeProducts.length === 0) {
-        showAlertModal("Por favor selecciona al menos un producto");
+        showAlertModal("Por favor selecciona al menos un producto con el botón +");
         return;
-      }
-
-      // Asegurar guardado final en la nube antes de redirigir a WhatsApp
-      if (currentUser && db) {
-        try {
-          const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'reservations', currentUser.uid);
-          await setDoc(userDocRef, {
-            p1: PRODUCTS.p1.qty,
-            p2: PRODUCTS.p2.qty,
-            confirmed: true,
-            updatedAt: Date.now()
-          }, { merge: true });
-        } catch (err) {
-          console.error("Error al registrar pedido:", err);
-        }
       }
 
       let totalAmount = 0;
@@ -699,25 +650,6 @@
       window.open(whatsappUrl, '_blank');
     }
 
-    async function resetCollectiveData() {
-      PRODUCTS.p1.qty = 0;
-      PRODUCTS.p2.qty = 0;
-      PRODUCTS.p1.baseReserved = 0;
-      PRODUCTS.p2.baseReserved = 0;
-      renderState();
-
-      if (db && currentUser) {
-        try {
-          const reservationsCol = collection(db, 'artifacts', appId, 'public', 'data', 'reservations');
-          const snapshot = await getDocs(reservationsCol);
-          const deletions = snapshot.docs.map(d => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reservations', d.id)));
-          await Promise.all(deletions);
-        } catch (e) {
-          console.error("Error al reiniciar datos de prueba:", e);
-        }
-      }
-    }
-
     function showAlertModal(msg) {
       const modal = document.getElementById('alert-modal');
       const card = document.getElementById('alert-modal-card');
@@ -743,45 +675,156 @@
       card.classList.remove('scale-100');
     }
 
-    // Expose functions to window for inline onclick attributes
-    window.updateQty = updateQty;
-    window.submitOrderToWhatsApp = submitOrderToWhatsApp;
-    window.closeAlertModal = closeAlertModal;
-    window.resetCollectiveData = resetCollectiveData;
-
     document.getElementById('alert-modal')?.addEventListener('click', function(e) {
       if (e.target === this) {
         closeAlertModal();
       }
     });
 
-    async function bootstrap() {
-      renderState();
-
-      if (typeof __firebase_config !== 'undefined') {
-        try {
-          const firebaseConfig = JSON.parse(__firebase_config);
-          const app = initializeApp(firebaseConfig);
-          auth = getAuth(app);
-          db = getFirestore(app);
-
-          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            await signInWithCustomToken(auth, __initial_auth_token);
-          } else {
-            await signInAnonymously(auth);
+    // Channel for multi-tab synchronization on any browser
+    let broadcastChannel = null;
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        broadcastChannel = new BroadcastChannel('cayeye_realtime_orders');
+        broadcastChannel.onmessage = (event) => {
+          if (event.data && event.data.deviceId !== DEVICE_ID) {
+            handleRemoteUpdate(event.data.payload);
           }
+        };
+      }
+    } catch (e) {
+      console.warn("BroadcastChannel not available:", e);
+    }
 
-          currentUser = auth.currentUser;
-          if (currentUser) {
-            setupRealtimeListener();
+    function broadcastChange() {
+      // Local broadcast across tabs
+      if (broadcastChannel) {
+        broadcastChannel.postMessage({
+          deviceId: DEVICE_ID,
+          payload: {
+            p1: PRODUCTS.p1.qty,
+            p2: PRODUCTS.p2.qty
           }
-        } catch (err) {
-          console.error("Error iniciando Firebase:", err);
-        }
+        });
+      }
+
+      // Cloud Firestore sync when available
+      if (cloudSyncCallback) {
+        cloudSyncCallback();
       }
     }
 
-    bootstrap();
+    function handleRemoteUpdate(payload) {
+      if (!payload) return;
+      if (typeof payload.p1 === 'number') PRODUCTS.p1.communityCount = payload.p1;
+      if (typeof payload.p2 === 'number') PRODUCTS.p2.communityCount = payload.p2;
+      renderState();
+    }
+
+    let cloudSyncCallback = null;
+
+    // Asynchronous cloud connection without blocking local interactions
+    async function initCloudSync() {
+      if (typeof __firebase_config === 'undefined') {
+        return; // GitHub Pages or standalone mode
+      }
+
+      try {
+        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js");
+        const { getAuth, signInAnonymously, signInWithCustomToken } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js");
+        const { getFirestore, doc, setDoc, collection, onSnapshot } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        const user = auth.currentUser;
+        if (!user) return;
+
+        const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'reservations', DEVICE_ID);
+        const reservationsCol = collection(db, 'artifacts', appId, 'public', 'data', 'reservations');
+
+        // Cloud listener across devices
+        onSnapshot(reservationsCol, (snapshot) => {
+          let sumP1 = 0;
+          let sumP2 = 0;
+          let otherVendors = 0;
+
+          snapshot.forEach((d) => {
+            const data = d.data();
+            if (d.id !== DEVICE_ID) {
+              const p1Val = Number(data.p1 || 0);
+              const p2Val = Number(data.p2 || 0);
+              sumP1 += p1Val;
+              sumP2 += p2Val;
+              if (p1Val > 0 || p2Val > 0) otherVendors++;
+            }
+          });
+
+          PRODUCTS.p1.communityCount = sumP1;
+          PRODUCTS.p2.communityCount = sumP2;
+
+          // Adjust local quantity if total would exceed goal
+          if (PRODUCTS.p1.communityCount + PRODUCTS.p1.qty > PRODUCTS.p1.goalTotal) {
+            PRODUCTS.p1.qty = Math.max(0, PRODUCTS.p1.goalTotal - PRODUCTS.p1.communityCount);
+          }
+          if (PRODUCTS.p2.communityCount + PRODUCTS.p2.qty > PRODUCTS.p2.goalTotal) {
+            PRODUCTS.p2.qty = Math.max(0, PRODUCTS.p2.goalTotal - PRODUCTS.p2.communityCount);
+          }
+
+          const indicator = document.getElementById('sync-indicator');
+          if (indicator) {
+            indicator.innerText = otherVendors > 0
+              ? `🟢 ${otherVendors + 1} puestos sumando en vivo`
+              : `🟢 Compra comunitaria en vivo`;
+          }
+
+          renderState();
+        }, (err) => {
+          console.warn("Firestore snapshot error:", err);
+        });
+
+        // Setup debounced write to cloud
+        let syncTimer = null;
+        cloudSyncCallback = () => {
+          clearTimeout(syncTimer);
+          syncTimer = setTimeout(async () => {
+            try {
+              await setDoc(docRef, {
+                p1: PRODUCTS.p1.qty,
+                p2: PRODUCTS.p2.qty,
+                updatedAt: Date.now()
+              }, { merge: true });
+            } catch (e) {
+              console.warn("Sync write failed:", e);
+            }
+          }, 100);
+        };
+
+      } catch (err) {
+        console.warn("Cloud sync initialization notice:", err);
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Immediate initial render
+      renderState();
+      // Start background real-time sync
+      initCloudSync();
+    });
+
+    // Global exposure for inline onclick handlers
+    window.updateQty = updateQty;
+    window.submitOrderToWhatsApp = submitOrderToWhatsApp;
+    window.closeAlertModal = closeAlertModal;
   </script>
 </body>
 </html>
