@@ -71,9 +71,19 @@
 <body class="bg-cayeye-cream text-cayeye-text font-sans antialiased min-h-screen flex flex-col pb-36">
 
   <!-- Top Micro-announcement Bar -->
-  <div class="bg-cayeye-olive-dark text-white text-xs font-semibold py-1.5 px-4 text-center flex items-center justify-center gap-2">
-    <span class="inline-block w-2 h-2 rounded-full bg-cayeye-mustard animate-ping"></span>
+  <div class="bg-cayeye-olive-dark text-white text-xs font-semibold py-1.5 px-4 text-center flex flex-wrap items-center justify-center gap-2">
+    <span class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-400/30">
+      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+      <span id="sync-indicator">🟢 Sincronizado en tiempo real</span>
+    </span>
     <span>Paga contra entrega en tu puesto de comida • La Bahía</span>
+    <button 
+      type="button" 
+      onclick="resetCollectiveData()" 
+      class="text-[10px] underline text-cayeye-mustard hover:text-white ml-1 font-normal opacity-80 transition-opacity"
+      title="Reiniciar unidades comunitarias para pruebas">
+      [Reiniciar prueba]
+    </button>
   </div>
 
   <!-- Header Section -->
@@ -416,10 +426,12 @@
     </div>
   </div>
 
-  <script>
-    /*
-     * Business Logic & Catalog Configuration for "La Bahía"
-     */
+  <!-- Firebase & Realtime Multi-device Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, deleteDoc, getDocs, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
     const PRODUCTS = {
       p1: {
         id: 'p1',
@@ -427,10 +439,10 @@
         variant: 'Bolsa 500g',
         collectivePrice: 11000,
         normalPrice: 16000,
-        baseReserved: 0,
+        baseReserved: 0, // Unidades acumuladas por otros puestos en tiempo real
         goalTotal: 12,
         unitLabel: 'uds',
-        qty: 0
+        qty: 0 // Unidades que aparta este puesto en su sesión
       },
       p2: {
         id: 'p2',
@@ -447,6 +459,12 @@
 
     const WHATSAPP_PHONE = '573052115960';
 
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+    let db = null;
+    let auth = null;
+    let currentUser = null;
+    let syncDebounceTimer = null;
+
     /**
      * Formats an integer amount as Colombian Pesos (e.g. $ 16.500)
      */
@@ -455,7 +473,7 @@
     }
 
     /**
-     * Updates quantities, ensures non-negative numbers, enforces goal limit, and triggers UI sync
+     * Updates quantities, checks limits and triggers cloud synchronization
      */
     function updateQty(productId, change) {
       const product = PRODUCTS[productId];
@@ -464,13 +482,14 @@
       const newQty = product.qty + change;
       if (newQty < 0) return;
 
-      // Prevent adding more if collective goal (100%) has been reached
+      // Impide exceder la meta colectiva (lo que otros puestos ya reservaron + lo que este puesto suma)
       if (change > 0 && (product.baseReserved + newQty) > product.goalTotal) {
         return;
       }
 
       product.qty = newQty;
       renderState();
+      scheduleCloudSync();
     }
 
     /**
@@ -481,7 +500,6 @@
       let totalSavings = 0;
       let totalItems = 0;
 
-      // Update individual products UI
       for (const key in PRODUCTS) {
         const p = PRODUCTS[key];
         const subtotal = p.qty * p.collectivePrice;
@@ -509,13 +527,13 @@
           minusBtn.disabled = p.qty <= 0;
         }
 
-        // Plus button state (disable when collective goal reaches 100%)
+        // Plus button state: Deshabilitado si entre todos los puestos se llegó al 100%
         const plusBtn = document.getElementById(`${p.id}-btn-plus`);
         if (plusBtn) {
           plusBtn.disabled = (p.baseReserved + p.qty) >= p.goalTotal;
         }
 
-        // Collective Progress calculation with vendor's contribution
+        // Collective Progress calculation (Suma en vivo: Otros puestos + este puesto)
         const currentCollectiveUnits = Math.min(p.goalTotal, p.baseReserved + p.qty);
         const percentage = Math.min(100, Math.round((currentCollectiveUnits / p.goalTotal) * 100));
         const slotsLeft = Math.max(0, p.goalTotal - currentCollectiveUnits);
@@ -553,7 +571,7 @@
         }
       }
 
-      // Dynamic styling on the WhatsApp action button
+      // WhatsApp Button highlight
       const waButton = document.getElementById('btn-whatsapp');
       if (waButton) {
         if (totalItems > 0) {
@@ -566,39 +584,107 @@
       }
     }
 
-    /**
-     * Formats order and opens WhatsApp directly to complete transaction
-     */
-    function submitOrderToWhatsApp() {
+    function scheduleCloudSync() {
+      if (!currentUser || !db) return;
+      clearTimeout(syncDebounceTimer);
+      syncDebounceTimer = setTimeout(async () => {
+        try {
+          const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'reservations', currentUser.uid);
+          await setDoc(userDocRef, {
+            p1: PRODUCTS.p1.qty,
+            p2: PRODUCTS.p2.qty,
+            updatedAt: Date.now()
+          }, { merge: true });
+        } catch (err) {
+          console.error("Error al sincronizar con la nube:", err);
+        }
+      }, 150);
+    }
+
+    function setupRealtimeListener() {
+      if (!db || !currentUser) return;
+      const reservationsCol = collection(db, 'artifacts', appId, 'public', 'data', 'reservations');
+
+      onSnapshot(reservationsCol, (snapshot) => {
+        let otherVendorsP1 = 0;
+        let otherVendorsP2 = 0;
+        let activeDevicesCount = 0;
+
+        snapshot.forEach((docSnap) => {
+          const data = docSnap.data();
+          if (docSnap.id !== currentUser.uid) {
+            otherVendorsP1 += Number(data.p1 || 0);
+            otherVendorsP2 += Number(data.p2 || 0);
+            if ((data.p1 || 0) > 0 || (data.p2 || 0) > 0) {
+              activeDevicesCount++;
+            }
+          }
+        });
+
+        // Actualiza la base comunitaria aportada por los otros dispositivos
+        PRODUCTS.p1.baseReserved = otherVendorsP1;
+        PRODUCTS.p2.baseReserved = otherVendorsP2;
+
+        // Ajusta las cantidades locales si los otros puestos ya coparon el cupo
+        if (PRODUCTS.p1.baseReserved + PRODUCTS.p1.qty > PRODUCTS.p1.goalTotal) {
+          PRODUCTS.p1.qty = Math.max(0, PRODUCTS.p1.goalTotal - PRODUCTS.p1.baseReserved);
+        }
+        if (PRODUCTS.p2.baseReserved + PRODUCTS.p2.qty > PRODUCTS.p2.goalTotal) {
+          PRODUCTS.p2.qty = Math.max(0, PRODUCTS.p2.goalTotal - PRODUCTS.p2.baseReserved);
+        }
+
+        const syncEl = document.getElementById('sync-indicator');
+        if (syncEl) {
+          syncEl.innerText = activeDevicesCount > 0 
+            ? `🟢 ${activeDevicesCount + 1} puestos conectados en vivo`
+            : `🟢 Sincronizado en tiempo real`;
+        }
+
+        renderState();
+      }, (error) => {
+        console.error("Error en escucha en tiempo real:", error);
+      });
+    }
+
+    async function submitOrderToWhatsApp() {
       const activeProducts = Object.values(PRODUCTS).filter(p => p.qty > 0);
 
-      // Validation required: Alert if nothing is selected
       if (activeProducts.length === 0) {
         showAlertModal("Por favor selecciona al menos un producto");
         return;
       }
 
-      // Calculate total
+      // Asegurar guardado final en la nube antes de redirigir a WhatsApp
+      if (currentUser && db) {
+        try {
+          const userDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'reservations', currentUser.uid);
+          await setDoc(userDocRef, {
+            p1: PRODUCTS.p1.qty,
+            p2: PRODUCTS.p2.qty,
+            confirmed: true,
+            updatedAt: Date.now()
+          }, { merge: true });
+        } catch (err) {
+          console.error("Error al registrar pedido:", err);
+        }
+      }
+
       let totalAmount = 0;
       for (const p of activeProducts) {
         totalAmount += (p.qty * p.collectivePrice);
       }
       const formattedTotal = formatCOP(totalAmount);
 
-      // Construct item summary listing only products with qty > 0
-      // Example: "[Cant] Cebolla Crispy y [Cant] Bolsas Herméticas"
       let productDetailsString = '';
       if (activeProducts.length === 1) {
         const item = activeProducts[0];
         productDetailsString = `${item.qty} ${item.name}`;
       } else {
         const itemsTextArray = activeProducts.map(item => `${item.qty} ${item.name}`);
-        // Join with ' y ' for the last element
         const lastItem = itemsTextArray.pop();
         productDetailsString = `${itemsTextArray.join(', ')} y ${lastItem}`;
       }
 
-      // Plantilla de mensaje con resumen del pedido y campos de entrega listos para diligenciar
       const message = `¡Hola! Soy un puesto de La Bahía. Me sumo a la compra colectiva de hoy con: ${productDetailsString}. Mi total es ${formattedTotal}. Pago contra entrega en mi puesto.\n\n` +
         `📋 *Datos:*\n` +
         `━━━━━━━━━━━━━━━━━━━━\n` +
@@ -607,17 +693,31 @@
         `• Dirección: \n` +
         `• Forma de pago: `;
 
-      // Generate WhatsApp Link
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE}?text=${encodedMessage}`;
 
-      // Dispatch order via WhatsApp
       window.open(whatsappUrl, '_blank');
     }
 
-    /**
-     * Custom accessible Alert Modal
-     */
+    async function resetCollectiveData() {
+      PRODUCTS.p1.qty = 0;
+      PRODUCTS.p2.qty = 0;
+      PRODUCTS.p1.baseReserved = 0;
+      PRODUCTS.p2.baseReserved = 0;
+      renderState();
+
+      if (db && currentUser) {
+        try {
+          const reservationsCol = collection(db, 'artifacts', appId, 'public', 'data', 'reservations');
+          const snapshot = await getDocs(reservationsCol);
+          const deletions = snapshot.docs.map(d => deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reservations', d.id)));
+          await Promise.all(deletions);
+        } catch (e) {
+          console.error("Error al reiniciar datos de prueba:", e);
+        }
+      }
+    }
+
     function showAlertModal(msg) {
       const modal = document.getElementById('alert-modal');
       const card = document.getElementById('alert-modal-card');
@@ -643,17 +743,45 @@
       card.classList.remove('scale-100');
     }
 
-    // Close modal on click outside
+    // Expose functions to window for inline onclick attributes
+    window.updateQty = updateQty;
+    window.submitOrderToWhatsApp = submitOrderToWhatsApp;
+    window.closeAlertModal = closeAlertModal;
+    window.resetCollectiveData = resetCollectiveData;
+
     document.getElementById('alert-modal')?.addEventListener('click', function(e) {
       if (e.target === this) {
         closeAlertModal();
       }
     });
 
-    // Initial render on load
-    document.addEventListener('DOMContentLoaded', () => {
+    async function bootstrap() {
       renderState();
-    });
+
+      if (typeof __firebase_config !== 'undefined') {
+        try {
+          const firebaseConfig = JSON.parse(__firebase_config);
+          const app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
+          db = getFirestore(app);
+
+          if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+          } else {
+            await signInAnonymously(auth);
+          }
+
+          currentUser = auth.currentUser;
+          if (currentUser) {
+            setupRealtimeListener();
+          }
+        } catch (err) {
+          console.error("Error iniciando Firebase:", err);
+        }
+      }
+    }
+
+    bootstrap();
   </script>
 </body>
 </html>
