@@ -1,82 +1,34 @@
-
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sociedad Agrícola Yadira SAS | Guineo y plátano</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Nunito+Sans:wght@400;600;700&display=swap">
-<style>
-:root{--bg:#f2f6ee;--ink:#18301f;--mut:#566b5a;--card:#fff;--line:#d9e3d2;--leaf:#2d6a3a;--onleaf:#fff;--sun:#f0c02f;--onsun:#3b2f00;--tint:#e4eed9;color-scheme:light;
-box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1a12;--ink:#e8f1e6;--mut:#9db4a1;--card:#16251a;--line:#264030;--leaf:#8fd69c;--onleaf:#0f1a12;--tint:#1c3123;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0f1a12;--ink:#e8f1e6;--mut:#9db4a1;--card:#16251a;--line:#264030;--leaf:#8fd69c;--onleaf:#0f1a12;--tint:#1c3123;color-scheme:dark}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Nunito Sans",system-ui,sans-serif}
-h1,h2,h3{font-family:"Bricolage Grotesque","Nunito Sans",system-ui,sans-serif;line-height:1.1;margin:0}
-button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer}
-:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
-header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:var(--bg);border-bottom:1px solid var(--line)}
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:6}
-.brand{font:800 22px "Bricolage Grotesque",sans-serif}
-.cartbtn{display:flex;align-items:center;gap:8px;border:2px solid var(--leaf);background:transparent;border-radius:999px;padding:8px 16px;font-weight:700}
-.cartbtn b{background:var(--sun);color:var(--onsun);border-radius:999px;min-width:24px;height:24px;display:grid;place-items:center;font-size:14px;padding:0 6px}
-.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
-.hero{display:grid;grid-template-columns:1.1fr 1fr;gap:32px;align-items:center;padding:40px 0 24px}
-.hero h1{font-size:clamp(36px,6vw,60px);font-weight:800;letter-spacing:-.02em}
-.hero p{color:var(--mut);max-width:44ch;margin:14px 0 22px}
-.stage{background:var(--tint);border-radius:28px;padding:20px;text-align:center}
-.stage img{width:100%;max-width:340px;height:auto;border-radius:20px;display:block;margin:0 auto 12px;background:#fff}
-.stage label{display:block;font-weight:700;margin-bottom:6px}
-input[type=range]{width:100%;accent-color:var(--leaf)}
-.stage output{display:block;margin-top:8px;min-height:3em;color:var(--mut)}
-.btn{background:var(--leaf);color:var(--onleaf);border:0;border-radius:12px;padding:12px 20px;font-weight:700}
-.btn:hover{filter:brightness(1.08)}
-.btn.sun{background:var(--sun);color:var(--onsun)}
-.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--line)}
-h2{font-size:clamp(26px,4vw,36px);font-weight:700;margin:28px 0 16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;padding-bottom:40px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
-.art{background:#fff;padding:10px}
-.art img{width:100%;height:190px;object-fit:contain;display:block}
-.body{padding:16px;display:flex;flex-direction:column;gap:12px;flex:1}
-.body h3{font-size:22px}
-.body p{margin:0;color:var(--mut);font-size:15px}
-.sizes{display:flex;gap:8px;flex-wrap:wrap}
-.sizes button{flex:1;border:2px solid var(--line);background:transparent;border-radius:12px;padding:8px 10px;text-align:left;line-height:1.25;font-size:14px}
-.sizes button small{display:block;color:var(--mut)}
-.sizes button[aria-pressed=true]{border-color:var(--leaf);background:var(--tint)}
-.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto}
-.price{font:700 24px "Bricolage Grotesque",sans-serif}
-.qty{display:inline-flex;align-items:center;border:2px solid var(--line);border-radius:12px}
-.qty button{border:0;background:transparent;width:36px;height:36px;font-size:20px;font-weight:700}
-.qty span{min-width:26px;text-align:center;font-weight:700}
-footer{border-top:1px solid var(--line);padding:24px 20px;color:var(--mut);text-align:center;font-size:14px}
-.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10;display:none}
-.scrim.on{display:block}
-aside{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:var(--card);z-index:11;display:flex;flex-direction:column;transform:translateX(105%);transition:transform .25s;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-aside.on{transform:none}
-.dh{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--line)}
-.dh h2{margin:0;font-size:24px}
-.dh button{border:0;background:transparent;font-size:28px;line-height:1}
-.db{flex:1;overflow:auto;padding:16px 20px}
-.df{padding:16px 20px;border-top:1px solid var(--line);display:grid;gap:8px}
-.item{display:grid;grid-template-columns:64px 1fr auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
-.item .th{background:#fff;border-radius:12px;padding:4px}
-.item .th img{width:100%;height:48px;object-fit:contain;display:block}
-.item small{color:var(--mut);display:block}
-.item .rm{border:0;background:transparent;color:var(--mut);text-decoration:underline;font-size:13px;padding:0}
-.tot{display:flex;justify-content:space-between}
-.tot.big{font:700 20px "Bricolage Grotesque",sans-serif}
-.empty{text-align:center;color:var(--mut);padding:40px 10px}
-form{display:grid;gap:12px}
-form label{display:grid;gap:4px;font-weight:600;font-size:14px}
-form input,form select,form textarea{border:2px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px}
-.ok{text-align:center;padding:20px 0}
-.ok h3{font-size:26px;margin-bottom:8px}
-.ok p{color:var(--mut)}
-@media(max-width:760px){.hero{grid-template-columns:1fr}}
-@media(prefers-reduced-motion:reduce){aside{transition:none}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Marck+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>San Valentin Carta 1v</title>
+</head>
+<body>
+    <h1>¡Feliz San Valentín! ❤️</h1>
+    <div class="contenedor">
+        <div class="envoltura-sobre">
+            <div class="sobre">
+                <div class="carta">
+                    <div class="contenido">
+                        <strong>Querida Estrella</strong>
+                        <p>
+                            Hoy es <strong>San Valentín</strong>, el día oficial de los <em>corazones</em>, el <em>chocolate</em> y las declaraciones de amor dramáticas (como en las telenovelas). Así que prepárate, porque aquí va la mía: Desde que te conocí, mi corazón late más rápido que <code>WiFi</code> gratis en una plaza pública. Eres más brillante que un mensaje de "<strong>te amo</strong>" en <strong>LED gigante</strong> y más dulce que el doble de caramelo en un café con extra de crema. Si fueras un algoritmo, serías el más eficiente: optimizas mi felicidad con la menor cantidad de esfuerzo. Si fueras un bug, serías el único que no querría corregir. Y si fueras una aplicación, serías la que siempre tengo anclada en mi pantalla principal. Gracias por hacer de mi vida una versión mejorada, sin errores (bueno, quizá con algunos, pero todos adorables). <br> <strong>Feliz San Valentín</strong>, mi <em>estrella favorita</em>. <br> Con mucho <strong>código</strong> (y <strong>amor</strong>), <br> Tu programador enamorado. <br> <span style="font-size: 0.9em; color: grey;">PD: Si esta carta fuera un programa, su salida sería:</span> <br> <code>"Eres lo mejor que me ha pasado."</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="corazon"></div>
+            <div class="solapa-derecha"></div>
+            <div class="solapa-izquierda"></div>
+        </div>
+    </div>
+    <!-- <script src="script_v2.js"></script> -->
+     <script src="script_v2.js"></script>
+</body>
+</html>
